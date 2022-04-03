@@ -1,4 +1,5 @@
 const {User} = require('../models')
+const { signToken } = require('../utils/auth');
 
 const resolvers = {
     Query: {
@@ -8,8 +9,13 @@ const resolvers = {
     },
     Mutation: {
         addUser: async (parent, args) => {
+            console.log("Adding user args", args);
             const user = await User.create(args);
+            console.log("Adding user", user);
+
             const token = signToken(user);
+            console.log("Return user", token);
+
 
             return { token, user };
         },
@@ -32,7 +38,7 @@ const resolvers = {
         saveBook: async (parent, args, context) => {
             if (context.user) {             
                 const username = context.user.username;
-                
+
                  await User.findByIdAndUpdate(
                      { _id: context.user._id },
                      { $push: { books: { ...args } } },

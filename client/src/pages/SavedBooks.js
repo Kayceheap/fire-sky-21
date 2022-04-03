@@ -3,12 +3,26 @@ import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap
 
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
+import { useParams } from 'react-router-dom';
 
+import { useQuery } from '@apollo/client';
+import { QUERY_USER } from '../utils/queries';
 
+const SavedBooks = () => {
+  const { username: userParam } = useParams();
+  
+  const { loading, data } = useQuery(QUERY_USER, {
+    variables: { username: userParam }
+  });
 
-  // if data isn't here yet, say so
-  if (!userDataLength) {
-    return <h2>LOADING...</h2>;
+  const handleDeleteBook = function(bookId) {
+    console.log("delete book")
+   };
+
+  const user = data?.user || {};
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -20,12 +34,12 @@ import { removeBookId } from '../utils/localStorage';
       </Jumbotron>
       <Container>
         <h2>
-          {userData.savedBooks.length
-            ? `Viewing ${userData.savedBooks.length} saved ${userData.savedBooks.length === 1 ? 'book' : 'books'}:`
+          {data.savedBooks.length
+            ? `Viewing ${data.savedBooks.length} saved ${data.savedBooks.length === 1 ? 'book' : 'books'}:`
             : 'You have no saved books!'}
         </h2>
         <CardColumns>
-          {userData.savedBooks.map((book) => {
+          {data.savedBooks.map((book) => {
             return (
               <Card key={book.bookId} border='dark'>
                 {book.image ? <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' /> : null}

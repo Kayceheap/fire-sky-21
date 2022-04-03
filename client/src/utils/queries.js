@@ -7,8 +7,7 @@ export const QUERY_USER = gql`
       username
       email    
       savedBooks {
-        _id: ID
-        authors: [String]
+        _id: ID      
         bookId: String
         image: String
         link: String

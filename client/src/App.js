@@ -5,13 +5,29 @@ import SavedBooks from './pages/SavedBooks';
 import Navbar from './components/Navbar';
 import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { onError } from 'apollo-link-error';
+import { ApolloLink } from 'apollo-link';
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  console.log("In error link");
+  if (graphQLErrors) {
+    console.log('graphQLErrors', graphQLErrors);
+  }
+  if (networkError) {
+    console.log('networkError', networkError);
+  }
+});
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:3001/graphql',
 });
 
+const link = ApolloLink.from([errorLink, httpLink]);
+
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem('id_token');
+  console.log("In set context", token )
+
   return {
     headers: {
       ...headers,
@@ -21,7 +37,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: authLink.concat(link).concat(httpLink),
   cache: new InMemoryCache(),
 });
 
@@ -33,7 +49,7 @@ function App() {
           <Navbar />
           <Switch>
             <Route exact path='/' component={SearchBooks} />
-            <Route exact path='/saved' component={SavedBooks} />
+            <Route exact path='/saved/:username' component={SavedBooks} />
             <Route render={() => <h1 className='display-2'>Wrong page!</h1>} />
           </Switch>
         </>

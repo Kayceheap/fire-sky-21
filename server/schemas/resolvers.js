@@ -1,11 +1,13 @@
-const {User} = require('../models')
+const { User } = require('../models')
 const { signToken } = require('../utils/auth');
+const { AuthenticationError } = require('apollo-server-express');
 
 const resolvers = {
     Query: {
-      me: async (parent, {username}) => {
-        return User.findOne({username});
-      }
+        me: async (parent, { username }) => {
+            console.log("INside me")
+            return User.findOne({ username });
+        }
     },
     Mutation: {
         addUser: async (parent, args) => {
@@ -20,6 +22,8 @@ const resolvers = {
             return { token, user };
         },
         login: async (parent, { email, password }) => {
+            console.log("IN login")
+
             const user = await User.findOne({ email });
 
             if (!user) {
@@ -32,25 +36,31 @@ const resolvers = {
                 throw new AuthenticationError('Incorrect credentials');
             }
 
+
             const token = signToken(user);
+
+
             return { token, user };
         },
         saveBook: async (parent, args, context) => {
-            if (context.user) {             
+            console.log("IN Save book", args)
+            if (context.user) {
+                console.log(context.user);
                 const username = context.user.username;
 
-                 await User.findByIdAndUpdate(
-                     { _id: context.user._id },
-                     { $push: { books: { ...args } } },
-                     { new: true }
-                 );
+                const newUser = await User.findByIdAndUpdate(
+                    { _id: context.user._id },
+                    { $push: { savedBooks: { ...args } } },
+                    { new: true }
+                );
 
-                 return User.findOne({username});
-             }
+                console.log("Return user", newUser)
+                return newUser;
+            }
 
-             throw new AuthenticationError('You need to be logged in!');
+            throw new AuthenticationError('You need to be logged in!');
         }
     }
-  };
-  
-  module.exports = resolvers;
+};
+
+module.exports = resolvers;

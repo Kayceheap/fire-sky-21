@@ -19,7 +19,9 @@ const SavedBooks = () => {
     console.log("delete book")
    };
 
-  const user = data?.user || {};
+  const user = data?.me || {};
+
+  console.log("Log data", user?.savedBooks);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -34,12 +36,12 @@ const SavedBooks = () => {
       </Jumbotron>
       <Container>
         <h2>
-          {data.savedBooks.length
-            ? `Viewing ${data.savedBooks.length} saved ${data.savedBooks.length === 1 ? 'book' : 'books'}:`
+          {user.savedBooks.length
+            ? `Viewing ${user.savedBooks.length} saved ${user.savedBooks.length === 1 ? 'book' : 'books'}:`
             : 'You have no saved books!'}
         </h2>
         <CardColumns>
-          {data.savedBooks.map((book) => {
+          {user.savedBooks.map((book) => {
             return (
               <Card key={book.bookId} border='dark'>
                 {book.image ? <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' /> : null}

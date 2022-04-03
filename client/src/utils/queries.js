@@ -8,6 +8,9 @@ export const QUERY_USER = gql`
       email     
       savedBooks {
         bookId
+        authors
+        title
+        image
       }    
     }
   }

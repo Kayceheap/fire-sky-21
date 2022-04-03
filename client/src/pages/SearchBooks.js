@@ -78,7 +78,7 @@ const SearchBooks = () => {
       console.log(vars);
 
       const { data } = await saveBook({
-        variables: { bookId : "1234" },
+        variables: { ...bookToSave },
       });
 
       console.log("After save book");

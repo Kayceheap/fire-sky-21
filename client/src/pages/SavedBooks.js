@@ -8,15 +8,26 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { QUERY_USER } from '../utils/queries';
 
+import { useMutation } from '@apollo/client';
+import { REMOVE_BOOK } from '../utils/mutations';
+
 const SavedBooks = () => {
   const { username: userParam } = useParams();
+  const [removeBook, { error }] = useMutation(REMOVE_BOOK);
   
   const { loading, data } = useQuery(QUERY_USER, {
     variables: { username: userParam }
   });
 
-  const handleDeleteBook = function(bookId) {
+  const handleDeleteBook = async function(bookId) {
     console.log("delete book")
+    removeBookId(bookId);
+
+    const { data } = await removeBook({
+      variables: { "bookId": bookId },
+    });
+
+    console.log("After delete book");
    };
 
   const user = data?.me || {};

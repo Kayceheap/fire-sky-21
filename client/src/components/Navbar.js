@@ -11,8 +11,6 @@ const AppNavbar = () => {
   // set modal display state
   const [showModal, setShowModal] = useState(false);
 
-  console.log("NavBar ", Auth.getProfile().data.username);
-
   return (
     <>
       <Navbar bg='dark' variant='dark' expand='lg'>
